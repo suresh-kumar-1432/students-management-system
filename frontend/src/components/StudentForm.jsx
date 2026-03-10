@@ -29,24 +29,45 @@ function StudentForm({ addStudent, updateStudent, editingStudent }) {
 
     e.preventDefault();
 
-    if (!student.name || !student.email || !student.age) {
-      alert("All fields are mandatory");
+    // trim values to remove spaces
+    const name = student.name.trim();
+    const email = student.email.trim();
+    const age = student.age.trim();
+
+    // mandatory fields check
+    if (!name || !email || !age) {
+      alert("Name, Email and Age are required");
       return;
     }
 
+    // email validation
     const emailRegex = /\S+@\S+\.\S+/;
 
-    if (!emailRegex.test(student.email)) {
-      alert("Invalid Email Format");
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address");
       return;
     }
 
-    if (editingStudent) {
-      updateStudent(student);
-    } else {
-      addStudent(student);
+    // age validation
+    if (isNaN(age) || age <= 0) {
+      alert("Age must be a valid number");
+      return;
     }
 
+    const newStudent = {
+      ...student,
+      name,
+      email,
+      age
+    };
+
+    if (editingStudent) {
+      updateStudent(newStudent);
+    } else {
+      addStudent(newStudent);
+    }
+
+    // reset form
     setStudent({
       name: "",
       email: "",

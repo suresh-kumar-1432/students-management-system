@@ -4,6 +4,8 @@ import StudentForm from "./components/StudentForm";
 import StudentTable from "./components/StudentTable";
 import ConfirmDialog from "./components/ConfirmDialog";
 
+const API_URL = "https://students-backend-qaxl.onrender.com/students";
+
 function App() {
 
   const [students, setStudents] = useState([]);
@@ -15,41 +17,52 @@ function App() {
   const [studentToDelete, setStudentToDelete] = useState(null);
 
   useEffect(() => {
+    fetchStudents();
+  }, []);
 
-  fetchStudents();
+  const fetchStudents = async () => {
+    try {
 
-}, []);
+      const response = await axios.get(API_URL);
+      setStudents(response.data);
 
-const fetchStudents = async () => {
+    } catch (error) {
 
-  const response = await axios.get("http://localhost:3000/students");
+      console.error("Error fetching students:", error);
 
-  setStudents(response.data);
+    } finally {
 
-  setLoading(false);
+      setLoading(false);
 
-};
+    }
+  };
 
   const addStudent = async (student) => {
+    try {
 
-  await axios.post("http://localhost:3000/students", student);
+      await axios.post(API_URL, student);
+      fetchStudents();
 
-  fetchStudents();
+    } catch (error) {
 
-};
+      console.error("Error adding student:", error);
+
+    }
+  };
 
   const updateStudent = async (student) => {
+    try {
 
-  await axios.put(
-    `http://localhost:3000/students/${student.id}`,
-    student
-  );
+      await axios.put(`${API_URL}/${student.id}`, student);
+      setEditingStudent(null);
+      fetchStudents();
 
-  setEditingStudent(null);
+    } catch (error) {
 
-  fetchStudents();
+      console.error("Error updating student:", error);
 
-};
+    }
+  };
 
   const deleteStudent = (id) => {
 
@@ -60,15 +73,19 @@ const fetchStudents = async () => {
 
   const confirmDelete = async () => {
 
-  await axios.delete(
-    `http://localhost:3000/students/${studentToDelete}`
-  );
+    try {
 
-  setShowDialog(false);
+      await axios.delete(`${API_URL}/${studentToDelete}`);
+      setShowDialog(false);
+      fetchStudents();
 
-  fetchStudents();
+    } catch (error) {
 
-};
+      console.error("Error deleting student:", error);
+
+    }
+
+  };
 
   const cancelDelete = () => {
 
@@ -78,10 +95,16 @@ const fetchStudents = async () => {
 
   if (loading) return <h2>Loading Students...</h2>;
 
-  const filteredStudents = students.filter((student) =>
-    student.name.toLowerCase().includes(search.toLowerCase()) ||
-    student.email.toLowerCase().includes(search.toLowerCase())
-  );
+  const searchText = search.toLowerCase().trim();
+
+  const filteredStudents = students.filter((student) => {
+
+    const name = student.name?.toLowerCase() || "";
+    const email = student.email?.toLowerCase() || "";
+
+    return name.includes(searchText) || email.includes(searchText);
+
+  });
 
   return (
 
@@ -95,12 +118,27 @@ const fetchStudents = async () => {
 
         <h1>Students Management System</h1>
 
-        <input
-          type="text"
-          placeholder="Search students name"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        {/* SEARCH SECTION */}
+
+        <div style={{marginBottom:"15px"}}>
+
+          <input
+            type="search"
+            placeholder="Search by name or email"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{padding:"6px", marginRight:"10px"}}
+          />
+
+          <button onClick={() => setSearch("")}>
+            Clear
+          </button>
+
+          <p style={{marginTop:"5px"}}>
+            {filteredStudents.length} student(s) found
+          </p>
+
+        </div>
 
         <StudentForm
           addStudent={addStudent}
@@ -117,13 +155,11 @@ const fetchStudents = async () => {
       </div>
 
       {showDialog && (
-
         <ConfirmDialog
           message="Are you sure you want to delete this student?"
           onConfirm={confirmDelete}
           onCancel={cancelDelete}
         />
-
       )}
 
     </div>

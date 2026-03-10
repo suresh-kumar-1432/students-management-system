@@ -1,68 +1,171 @@
-import { exportToExcel } from "../utils/excelExport";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import StudentForm from "./components/StudentForm";
+import StudentTable from "./components/StudentTable";
+import ConfirmDialog from "./components/ConfirmDialog";
 
-function StudentTable({ students, setEditingStudent, deleteStudent }) {
+const API_URL = "https://students-backend-qaxl.onrender.com/students";
 
-    return (
+function App() {
 
-        <div>
+  const [students, setStudents] = useState([]);
+  const [editingStudent, setEditingStudent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
-            <button className="download-btn" onClick={() => exportToExcel(students)}>
-                Download Excel
-            </button>
+  const [showDialog, setShowDialog] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState(null);
 
-            <table border="1">
+  useEffect(() => {
+    fetchStudents();
+  }, []);
 
-                <thead>
+  const fetchStudents = async () => {
+    try {
 
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Age</th>
-                        <th>Actions</th>
-                    </tr>
+      const response = await axios.get(API_URL);
+      setStudents(response.data);
 
-                </thead>
+    } catch (error) {
 
-                <tbody>
+      console.error("Error fetching students:", error);
 
-                    {students.map((student) => (
+    } finally {
 
-                        <tr key={student.id}>
+      setLoading(false);
 
-                            <td>{student.name}</td>
-                            <td>{student.email}</td>
-                            <td>{student.age}</td>
+    }
+  };
 
-                            <td>
+  const addStudent = async (student) => {
+    try {
 
-                                <button
-                                    className="edit-btn"
-                                    onClick={() => setEditingStudent(student)}
-                                >
-                                    Edit
-                                </button>
+      await axios.post(API_URL, student);
+      fetchStudents();
 
-                                <button
-                                    className="delete-btn"
-                                    onClick={() => deleteStudent(student.id)}
-                                >
-                                    Delete
-                                </button>
+    } catch (error) {
 
-                            </td>
+      console.error("Error adding student:", error);
 
-                        </tr>
+    }
+  };
 
-                    ))}
+  const updateStudent = async (student) => {
+    try {
 
-                </tbody>
+      await axios.put(`${API_URL}/${student.id}`, student);
+      setEditingStudent(null);
+      fetchStudents();
 
-            </table>
+    } catch (error) {
+
+      console.error("Error updating student:", error);
+
+    }
+  };
+
+  const deleteStudent = (id) => {
+
+    setStudentToDelete(id);
+    setShowDialog(true);
+
+  };
+
+  const confirmDelete = async () => {
+
+    try {
+
+      await axios.delete(`${API_URL}/${studentToDelete}`);
+      setShowDialog(false);
+      fetchStudents();
+
+    } catch (error) {
+
+      console.error("Error deleting student:", error);
+
+    }
+
+  };
+
+  const cancelDelete = () => {
+
+    setShowDialog(false);
+
+  };
+
+  if (loading) return <h2>Loading Students...</h2>;
+
+  const searchText = search.toLowerCase().trim();
+
+  const filteredStudents = students.filter((student) => {
+
+    const name = student.name?.toLowerCase() || "";
+    const email = student.email?.toLowerCase() || "";
+
+    return name.includes(searchText) || email.includes(searchText);
+
+  });
+
+  return (
+
+    <div>
+
+      <nav className="navbar">
+        <h2>Student Manager</h2>
+      </nav>
+
+      <div className="container">
+
+        <h1>Students Management System</h1>
+
+        {/* SEARCH SECTION */}
+
+        <div style={{marginBottom:"15px"}}>
+
+          <input
+            type="search"
+            placeholder="Search by name or email"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{padding:"6px", marginRight:"10px"}}
+          />
+
+          <button onClick={() => setSearch("")}>
+            Clear
+          </button>
+
+          <p style={{marginTop:"5px"}}>
+            {filteredStudents.length} student(s) found
+          </p>
 
         </div>
 
-    );
+        <StudentForm
+          addStudent={addStudent}
+          updateStudent={updateStudent}
+          editingStudent={editingStudent}
+        />
+
+        <StudentTable
+          students={filteredStudents}
+          setEditingStudent={setEditingStudent}
+          deleteStudent={deleteStudent}
+        />
+
+      </div>
+
+      {showDialog && (
+        <ConfirmDialog
+          message="Are you sure you want to delete this student?"
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+        />
+      )}
+
+    </div>
+
+  );
 
 }
 
-export default StudentTable;
+export default App;
