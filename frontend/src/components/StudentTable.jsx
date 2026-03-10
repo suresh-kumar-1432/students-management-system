@@ -1,8 +1,5 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import StudentForm from "./components/StudentForm";
-import StudentTable from "./components/StudentTable";
-import ConfirmDialog from "./components/ConfirmDialog";
+import { exportToExcel } from "../utils/excelExport";
+
 
 const API_URL = "https://students-backend-qaxl.onrender.com/students";
 
