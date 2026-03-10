@@ -9,64 +9,56 @@ function StudentTable({ students, setEditingStudent, deleteStudent }) {
       <button
         className="download-btn"
         onClick={() => exportToExcel(students)}
-        style={{ marginBottom: "10px" }}
       >
-        Download Excel
+        <i className="fas fa-file-excel"></i> Download Excel
       </button>
 
-      {students.length === 0 ? (
-        <p>No students found</p>
-      ) : (
+      <table>
 
-        <table border="1" width="100%" style={{ textAlign: "center" }}>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Age</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
 
-          <thead>
+        <tbody>
 
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Age</th>
-              <th>Actions</th>
+          {students.map((student) => (
+
+            <tr key={student.id}>
+
+              <td>{student.name}</td>
+              <td>{student.email}</td>
+              <td>{student.age}</td>
+
+              <td>
+
+                <button
+                  className="edit-btn"
+                  onClick={() => setEditingStudent(student)}
+                >
+                  <i className="fas fa-edit"></i> Edit
+                </button>
+
+                <button
+                  className="delete-btn"
+                  onClick={() => deleteStudent(student.id)}
+                >
+                  <i className="fas fa-trash"></i> Delete
+                </button>
+
+              </td>
+
             </tr>
 
-          </thead>
+          ))}
 
-          <tbody>
+        </tbody>
 
-            {students.map((student) => (
-
-              <tr key={student.id}>
-
-                <td>{student.name}</td>
-                <td>{student.email}</td>
-                <td>{student.age}</td>
-
-                <td>
-
-                  <button
-                    onClick={() => setEditingStudent(student)}
-                    style={{ marginRight: "8px" }}
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    onClick={() => deleteStudent(student.id)}
-                  >
-                    Delete
-                  </button>
-
-                </td>
-
-              </tr>
-
-            ))}
-
-          </tbody>
-
-        </table>
-
-      )}
+      </table>
 
     </div>
 

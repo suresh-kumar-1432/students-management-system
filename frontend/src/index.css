@@ -1,6 +1,6 @@
 body{
   margin:0;
-  font-family:Arial, Helvetica, sans-serif;
+  font-family: 'Segoe UI', sans-serif;
   background:#f4f6f9;
 }
 
@@ -12,26 +12,57 @@ body{
   padding:15px 30px;
   display:flex;
   align-items:center;
+  justify-content:space-between;
 }
 
 .navbar h2{
   margin:0;
+  font-weight:500;
 }
 
-/* MAIN CONTAINER */
+/* CONTAINER */
 
 .container{
-  max-width:900px;
+  max-width:950px;
   margin:40px auto;
   background:white;
   padding:30px;
-  border-radius:8px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+  border-radius:10px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
-h1{
-  text-align:center;
-  margin-bottom:25px;
+/* SEARCH */
+
+.search-container{
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.search-input{
+  flex:1;
+  padding:10px;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+
+.clear-btn{
+  background:#f39c12;
+  color:white;
+  padding:10px 16px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.clear-btn:hover{
+  background:#d68910;
+}
+
+.search-count{
+  margin-bottom:15px;
+  font-size:14px;
+  color:#555;
 }
 
 /* FORM */
@@ -42,43 +73,24 @@ form{
   margin-bottom:20px;
 }
 
-input{
+form input{
   flex:1;
   padding:10px;
   border:1px solid #ccc;
-  border-radius:5px;
-}
-
-/* BUTTONS */
-
-button{
-  padding:10px 16px;
-  border:none;
-  border-radius:5px;
-  cursor:pointer;
-  color:white;
-}
-
-button:hover{
-  opacity:0.9;
+  border-radius:6px;
 }
 
 button[type="submit"]{
   background:#27ae60;
+  color:white;
+  border:none;
+  border-radius:6px;
+  padding:10px 16px;
+  cursor:pointer;
 }
 
-.download-btn{
-  background:#2980b9;
-  margin-bottom:10px;
-}
-
-.edit-btn{
-  background:#f39c12;
-  margin-right:5px;
-}
-
-.delete-btn{
-  background:#e74c3c;
+button[type="submit"]:hover{
+  background:#1e8449;
 }
 
 /* TABLE */
@@ -86,6 +98,7 @@ button[type="submit"]{
 table{
   width:100%;
   border-collapse:collapse;
+  margin-top:10px;
 }
 
 th{
@@ -95,16 +108,65 @@ th{
 }
 
 td{
-  padding:10px;
+  padding:12px;
   border-bottom:1px solid #ddd;
   text-align:center;
 }
 
 tr:hover{
-  background:#f2f2f2;
+  background:#f9f9f9;
 }
 
-/* dialog box */
+/* BUTTONS */
+
+.download-btn{
+  background:#2980b9;
+  color:white;
+  border:none;
+  padding:10px 16px;
+  border-radius:6px;
+  margin-bottom:10px;
+  cursor:pointer;
+}
+
+.download-btn:hover{
+  background:#21618c;
+}
+
+.edit-btn{
+  background:#f39c12;
+  border:none;
+  padding:8px 14px;
+  border-radius:6px;
+  color:white;
+  cursor:pointer;
+  margin-right:6px;
+}
+
+.edit-btn:hover{
+  background:#d68910;
+}
+
+.delete-btn{
+  background:#e74c3c;
+  border:none;
+  padding:8px 14px;
+  border-radius:6px;
+  color:white;
+  cursor:pointer;
+}
+
+.delete-btn:hover{
+  background:#c0392b;
+}
+
+/* ICON SPACING */
+
+button i{
+  margin-right:5px;
+}
+
+/* DIALOG */
 
 .dialog-overlay{
   position:fixed;
@@ -124,33 +186,18 @@ tr:hover{
   border-radius:8px;
   text-align:center;
   min-width:280px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.2);
 }
-
-/* button container */
 
 .dialog-box button{
-  margin:10px 8px 0 8px;
-  padding:8px 16px;
-  border:none;
-  border-radius:5px;
-  cursor:pointer;
-  color:white;
-  font-weight:500;
+  margin:10px;
 }
-
-/* confirm button */
 
 .dialog-box button:first-of-type{
   background:#e74c3c;
+  color:white;
 }
-
-/* cancel button */
 
 .dialog-box button:last-of-type{
   background:#3498db;
-}
-
-.dialog-box button:hover{
-  opacity:0.9;
+  color:white;
 }
