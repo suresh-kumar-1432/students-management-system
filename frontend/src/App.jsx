@@ -32,12 +32,31 @@ function App() {
   };
 
   const addStudent = async (student) => {
-    try {
-      await axios.post(API_URL, student);
-      fetchStudents();
-    } catch (error) {
-      console.error("Error adding student:", error);
+
+    // Check duplicate name + email
+    const isDuplicate = students.some(
+      (s) =>
+        s.name.toLowerCase() === student.name.toLowerCase() &&
+        s.email.toLowerCase() === student.email.toLowerCase()
+    );
+
+    if (isDuplicate) {
+      alert("Student with same name and email already exists");
+      return;
     }
+
+    try {
+
+      await axios.post(API_URL, student);
+
+      fetchStudents();
+
+    } catch (error) {
+
+      console.error("Error adding student:", error);
+
+    }
+
   };
 
   const updateStudent = async (student) => {
@@ -114,6 +133,7 @@ function App() {
           addStudent={addStudent}
           updateStudent={updateStudent}
           editingStudent={editingStudent}
+          students={students}
         />
 
         <StudentTable

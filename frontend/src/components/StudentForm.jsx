@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function StudentForm({ addStudent, updateStudent, editingStudent }) {
+function StudentForm({ addStudent, updateStudent, editingStudent, students }) {
 
   const [student, setStudent] = useState({
     name: "",
@@ -8,12 +8,12 @@ function StudentForm({ addStudent, updateStudent, editingStudent }) {
     age: ""
   });
 
-  useEffect(() => {
+  const [error, setError] = useState("");
 
+  useEffect(() => {
     if (editingStudent) {
       setStudent(editingStudent);
     }
-
   }, [editingStudent]);
 
   const handleChange = (e) => {
@@ -23,57 +23,49 @@ function StudentForm({ addStudent, updateStudent, editingStudent }) {
       [e.target.name]: e.target.value
     });
 
+    setError("");
   };
 
   const handleSubmit = (e) => {
 
     e.preventDefault();
 
-    // trim values to remove spaces
-    const name = student.name.trim();
-    const email = student.email.trim();
-    const age = student.age.trim();
-
-    // mandatory fields check
-    if (!name || !email || !age) {
-      alert("Name, Email and Age are required");
+    if (!student.name || !student.email || !student.age) {
+      setError("All fields are required");
       return;
     }
 
-    // email validation
     const emailRegex = /\S+@\S+\.\S+/;
 
-    if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address");
+    if (!emailRegex.test(student.email)) {
+      setError("Invalid email format");
       return;
     }
 
-    // age validation
-    if (isNaN(age) || age <= 0) {
-      alert("Age must be a valid number");
+    const duplicate = students.some(
+      (s) =>
+        s.name.toLowerCase() === student.name.toLowerCase() &&
+        s.email.toLowerCase() === student.email.toLowerCase()
+    );
+
+    if (duplicate && !editingStudent) {
+      setError("Student with same name and email already exists");
       return;
     }
-
-    const newStudent = {
-      ...student,
-      name,
-      email,
-      age
-    };
 
     if (editingStudent) {
-      updateStudent(newStudent);
+      updateStudent(student);
     } else {
-      addStudent(newStudent);
+      addStudent(student);
     }
 
-    // reset form
     setStudent({
       name: "",
       email: "",
       age: ""
     });
 
+    setError("");
   };
 
   return (
@@ -104,6 +96,8 @@ function StudentForm({ addStudent, updateStudent, editingStudent }) {
       <button type="submit">
         {editingStudent ? "Update Student" : "Add Student"}
       </button>
+
+      {error && <p className="error-message">{error}</p>}
 
     </form>
 
